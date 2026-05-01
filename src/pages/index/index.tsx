@@ -5,6 +5,7 @@ import CategoryCard from '@/components/CategoryCard'
 import BookCard from '@/components/BookCard'
 import { useConfigs } from '@/hooks/useConfigs'
 import { useSearch } from '@/hooks/useSearch'
+import { MIN_SEARCH_LENGTH } from '@/constants/cdn'
 import './index.scss'
 
 export default function IndexPage() {
@@ -19,7 +20,7 @@ export default function IndexPage() {
     Taro.navigateTo({ url: `/pages/detail/index?id=${encodeURIComponent(bookId)}` })
   }
 
-  const showSearch = keyword.length >= 2
+  const inSearchMode = keyword.length > 0
 
   return (
     <View className="index-page">
@@ -28,9 +29,11 @@ export default function IndexPage() {
         <SearchBar value={keyword} onInput={search} onClear={clear} />
       </View>
 
-      {showSearch ? (
+      {inSearchMode ? (
         <View className="index-page__search-results">
-          {searchLoading ? (
+          {keyword.length < MIN_SEARCH_LENGTH ? (
+            <Text className="index-page__hint">请输入至少 {MIN_SEARCH_LENGTH} 个字符</Text>
+          ) : searchLoading ? (
             <Text className="index-page__hint">搜索中...</Text>
           ) : results.length > 0 ? (
             results.map((book) => (
