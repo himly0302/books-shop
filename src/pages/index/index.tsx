@@ -4,17 +4,19 @@ import SearchBar from '@/components/SearchBar'
 import CategoryCard from '@/components/CategoryCard'
 import BookCard from '@/components/BookCard'
 import BookListCard from '@/components/BookListCard'
+import ErrorView from '@/components/ErrorView'
+import { SkeletonCategoryGrid, SkeletonBookCard } from '@/components/Skeleton'
 import { useConfigs } from '@/hooks/useConfigs'
 import { useSearch } from '@/hooks/useSearch'
 import { useFavorites } from '@/hooks/useFavorites'
 import { useHistory } from '@/hooks/useHistory'
-import { MIN_SEARCH_LENGTH } from '@/constants/cdn'
+import { MIN_SEARCH_LENGTH, THUMB_PARAMS } from '@/constants/cdn'
 import { BOOK_LISTS } from '@/constants/booklists'
 import './index.scss'
 
 export default function IndexPage() {
   const { index, loading, error, refresh } = useConfigs()
-  const { keyword, results, loading: searchLoading, search, clear } = useSearch()
+  const { keyword, results, loading: searchLoading, error: searchError, search, clear } = useSearch()
   const { history, clear: clearHistory } = useHistory()
   const { favorites } = useFavorites()
 
@@ -22,8 +24,10 @@ export default function IndexPage() {
     Taro.navigateTo({ url: `/pages/category/index?type=${encodeURIComponent(type)}` })
   }
 
-  const goToDetail = (bookId: string) => {
-    Taro.navigateTo({ url: `/pages/detail/index?id=${encodeURIComponent(bookId)}` })
+  const goToDetail = (bookId: string, bookType?: string) => {
+    const base = `/pages/detail/index?id=${encodeURIComponent(bookId)}`
+    const url = bookType ? `${base}&type=${encodeURIComponent(bookType)}` : base
+    Taro.navigateTo({ url })
   }
 
   const goToBookList = (id: string) => {
@@ -54,10 +58,12 @@ export default function IndexPage() {
           {keyword.length < MIN_SEARCH_LENGTH ? (
             <Text className="index-page__hint">请输入至少 {MIN_SEARCH_LENGTH} 个字符</Text>
           ) : searchLoading ? (
-            <Text className="index-page__hint">搜索中...</Text>
+            <View className="index-page__search-skeleton"><SkeletonBookCard count={2} /></View>
+          ) : searchError ? (
+            <ErrorView message="搜索失败" />
           ) : results.length > 0 ? (
             results.map((book) => (
-              <BookCard key={book.id} book={book} onClick={(b) => goToDetail(b.id)} />
+              <BookCard key={book.id} book={book} onClick={(b) => goToDetail(b.id, b.type)} />
             ))
           ) : (
             <View className="index-page__empty">
@@ -78,9 +84,9 @@ export default function IndexPage() {
                   <View
                     key={item.id}
                     className="index-page__recent-item"
-                    onClick={() => goToDetail(item.id)}
+                    onClick={() => goToDetail(item.id, item.type)}
                   >
-                    <Image className="index-page__recent-cover" src={item.picUrl} mode="aspectFill" lazyLoad />
+                    <Image className="index-page__recent-cover" src={item.picUrl + THUMB_PARAMS} mode="aspectFill" lazyLoad />
                     <Text className="index-page__recent-name">{item.name}</Text>
                   </View>
                 ))}
@@ -97,11 +103,10 @@ export default function IndexPage() {
           </View>
           <View className="index-page__categories">
             {loading ? (
-              <Text className="index-page__hint">加载中...</Text>
+              <View className="index-page__categories"><SkeletonCategoryGrid /></View>
             ) : error ? (
-              <View className="index-page__empty">
-                <Text>加载失败</Text>
-                <Text className="index-page__retry" onClick={refresh}>点击重试</Text>
+              <View className="index-page__categories">
+                <ErrorView onRetry={refresh} />
               </View>
             ) : (
               <View className="index-page__grid">

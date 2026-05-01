@@ -1,7 +1,7 @@
 import { View, Text, Button } from '@tarojs/components'
 import Taro, { useRouter, useShareAppMessage } from '@tarojs/taro'
 import { useState, useEffect, useCallback } from 'react'
-import { loadAllCategories } from '@/services/data'
+import { loadCategory, loadAllCategories } from '@/services/data'
 import type { Book } from '@/services/data'
 import { CATEGORY_COLORS, DETAIL_IMG_PARAMS } from '@/constants/cdn'
 import { copyDownloadLink } from '@/utils/clipboard'
@@ -15,6 +15,7 @@ import './index.scss'
 export default function DetailPage() {
   const router = useRouter()
   const id = router.params.id || ''
+  const type = router.params.type ? decodeURIComponent(router.params.type) : ''
   const [book, setBook] = useState<Book | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -26,18 +27,27 @@ export default function DetailPage() {
     setLoading(true)
     setError(null)
     try {
-      const all = await loadAllCategories()
-      const target = all.find((b) => b.id === id)
-      if (target) {
-        setBook(target)
-        add({ id: target.id, name: target.name, picUrl: target.picUrl })
+      if (type) {
+        const books = await loadCategory(type)
+        const target = books.find((b) => b.id === id)
+        if (target) {
+          setBook(target)
+          add({ id: target.id, name: target.name, picUrl: target.picUrl, type: target.type })
+        }
+      } else {
+        const all = await loadAllCategories()
+        const target = all.find((b) => b.id === id)
+        if (target) {
+          setBook(target)
+          add({ id: target.id, name: target.name, picUrl: target.picUrl, type: target.type })
+        }
       }
     } catch (e) {
       setError((e as Error).message)
     } finally {
       setLoading(false)
     }
-  }, [id])
+  }, [id, type])
 
   useEffect(() => {
     loadBook()
@@ -47,7 +57,7 @@ export default function DetailPage() {
     if (!book) return { title: '免费图书', path: '/pages/index/index' }
     return {
       title: `${book.name} - ${book.author}`,
-      path: `/pages/detail/index?id=${book.id}`,
+      path: `/pages/detail/index?id=${book.id}&type=${encodeURIComponent(book.type)}`,
       imageUrl: book.picUrl,
     }
   })

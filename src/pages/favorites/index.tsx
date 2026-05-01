@@ -1,45 +1,53 @@
 import { View, Text } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { loadAllCategories } from '@/services/data'
 import type { Book } from '@/services/data'
 import { useFavorites } from '@/hooks/useFavorites'
 import BookCard from '@/components/BookCard'
+import ErrorView from '@/components/ErrorView'
+import { SkeletonBookCard } from '@/components/Skeleton'
 import './index.scss'
 
 export default function FavoritesPage() {
   const { favorites, isFavorite } = useFavorites()
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const loadBooks = useCallback(async () => {
     if (favorites.length === 0) {
       setBooks([])
       setLoading(false)
       return
     }
-
-    const load = async () => {
-      try {
-        const all = await loadAllCategories()
-        const favSet = new Set(favorites)
-        setBooks(all.filter((b) => favSet.has(b.id)))
-      } finally {
-        setLoading(false)
-      }
+    setLoading(true)
+    setError(null)
+    try {
+      const all = await loadAllCategories()
+      const favSet = new Set(favorites)
+      setBooks(all.filter((b) => favSet.has(b.id)))
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setLoading(false)
     }
-
-    load()
   }, [favorites])
 
+  useEffect(() => {
+    loadBooks()
+  }, [loadBooks])
+
   const goToDetail = (book: Book) => {
-    Taro.navigateTo({ url: `/pages/detail/index?id=${encodeURIComponent(book.id)}` })
+    Taro.navigateTo({ url: `/pages/detail/index?id=${encodeURIComponent(book.id)}&type=${encodeURIComponent(book.type)}` })
   }
 
   return (
     <View className="favorites-page">
       {loading ? (
-        <Text className="favorites-page__hint">加载中...</Text>
+        <View className="favorites-page__list"><SkeletonBookCard count={3} /></View>
+      ) : error ? (
+        <ErrorView onRetry={loadBooks} />
       ) : books.length === 0 ? (
         <View className="favorites-page__empty">
           <Text>还没有收藏书籍</Text>

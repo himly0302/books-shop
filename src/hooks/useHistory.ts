@@ -6,6 +6,7 @@ export interface HistoryItem {
   id: string
   name: string
   picUrl: string
+  type?: string
 }
 
 function readHistory(): HistoryItem[] {

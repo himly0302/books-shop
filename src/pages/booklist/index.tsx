@@ -1,11 +1,13 @@
 import { View, Text } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { loadAllCategories } from '@/services/data'
 import type { Book } from '@/services/data'
 import { BOOK_LISTS } from '@/constants/booklists'
 import { PAGE_SIZE } from '@/constants/cdn'
 import BookCard from '@/components/BookCard'
+import ErrorView from '@/components/ErrorView'
+import { SkeletonBookCard } from '@/components/Skeleton'
 import './index.scss'
 
 export default function BookListPage() {
@@ -15,29 +17,33 @@ export default function BookListPage() {
 
   const [books, setBooks] = useState<Book[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
-  useEffect(() => {
+  const loadBooks = useCallback(async () => {
     if (!bookList) {
       setLoading(false)
       return
     }
-
-    const load = async () => {
-      try {
-        const all = await loadAllCategories()
-        const idSet = new Set(bookList.bookIds)
-        setBooks(all.filter((b) => idSet.has(b.id)))
-      } finally {
-        setLoading(false)
-      }
+    setLoading(true)
+    setError(null)
+    try {
+      const all = await loadAllCategories()
+      const idSet = new Set(bookList.bookIds)
+      setBooks(all.filter((b) => idSet.has(b.id)))
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setLoading(false)
     }
-
-    load()
   }, [id])
 
+  useEffect(() => {
+    loadBooks()
+  }, [loadBooks])
+
   const goToDetail = (book: Book) => {
-    Taro.navigateTo({ url: `/pages/detail/index?id=${encodeURIComponent(book.id)}` })
+    Taro.navigateTo({ url: `/pages/detail/index?id=${encodeURIComponent(book.id)}&type=${encodeURIComponent(book.type)}` })
   }
 
   const loadMore = () => {
@@ -64,7 +70,9 @@ export default function BookListPage() {
       </View>
 
       {loading ? (
-        <Text className="booklist-page__hint">加载中...</Text>
+        <View className="booklist-page__list"><SkeletonBookCard count={3} /></View>
+      ) : error ? (
+        <ErrorView onRetry={loadBooks} />
       ) : books.length === 0 ? (
         <View className="booklist-page__empty">
           <Text>暂无书籍</Text>
