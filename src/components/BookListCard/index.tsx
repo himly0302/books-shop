@@ -12,7 +12,7 @@ export default function BookListCard({ bookList, onClick }: BookListCardProps) {
     <View className="booklist-card" onClick={() => onClick(bookList.id)}>
       <View className="booklist-card__header">
         <Text className="booklist-card__title">{bookList.title}</Text>
-        <Text className="booklist-card__count">{bookList.bookIds.length} 本</Text>
+        <Text className="booklist-card__count">{bookList.books.length} 本</Text>
       </View>
       <Text className="booklist-card__desc">{bookList.description}</Text>
     </View>

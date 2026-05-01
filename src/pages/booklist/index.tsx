@@ -1,7 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import { useState, useEffect, useCallback } from 'react'
-import { loadAllCategories } from '@/services/data'
+import { loadCategory } from '@/services/data'
 import type { Book } from '@/services/data'
 import { BOOK_LISTS } from '@/constants/booklists'
 import { PAGE_SIZE } from '@/constants/cdn'
@@ -28,9 +28,10 @@ export default function BookListPage() {
     setLoading(true)
     setError(null)
     try {
-      const all = await loadAllCategories()
-      const idSet = new Set(bookList.bookIds)
-      setBooks(all.filter((b) => idSet.has(b.id)))
+      const types = [...new Set(bookList.books.map((b) => b.type))]
+      const idSet = new Set(bookList.books.map((b) => b.id))
+      const loaded = await Promise.all(types.map((t) => loadCategory(t)))
+      setBooks(loaded.flat().filter((b) => idSet.has(b.id)))
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -66,7 +67,7 @@ export default function BookListPage() {
       <View className="booklist-page__info">
         <Text className="booklist-page__title">{bookList.title}</Text>
         <Text className="booklist-page__desc">{bookList.description}</Text>
-        <Text className="booklist-page__meta">共 {bookList.bookIds.length} 本</Text>
+        <Text className="booklist-page__meta">共 {bookList.books.length} 本</Text>
       </View>
 
       {loading ? (
