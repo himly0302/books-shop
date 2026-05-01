@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Fixed
+- **浏览历史与收藏状态不刷新**：从详情页返回首页后，浏览历史和收藏角标不更新。根因是 Taro 小程序页面栈机制下返回不触发组件重挂载，需要通过 `useDidShow` 生命周期重新从 storage 同步数据
 - **搜索功能修复**：搜索返回空结果的问题。`loadAllCategories` 遍历 configs 时误将 `index` 键当作分类加载，导致 `index.json` 的非 Book 数据混入结果，过滤时报错
 
 ### Changed

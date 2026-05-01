@@ -1,20 +1,32 @@
 import { useState, useCallback } from 'react'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import { STORAGE_KEYS, MAX_HISTORY } from '@/constants/cdn'
 
+export interface HistoryItem {
+  id: string
+  name: string
+  picUrl: string
+}
+
+function readHistory(): HistoryItem[] {
+  try {
+    return Taro.getStorageSync(STORAGE_KEYS.history) || []
+  } catch {
+    return []
+  }
+}
+
 export function useHistory() {
-  const [history, setHistory] = useState<string[]>(() => {
-    try {
-      return Taro.getStorageSync(STORAGE_KEYS.history) || []
-    } catch {
-      return []
-    }
+  const [history, setHistory] = useState<HistoryItem[]>(readHistory)
+
+  useDidShow(() => {
+    setHistory(readHistory())
   })
 
-  const add = useCallback((bookId: string) => {
+  const add = useCallback((item: HistoryItem) => {
     setHistory((prev) => {
-      const filtered = prev.filter((id) => id !== bookId)
-      const next = [bookId, ...filtered].slice(0, MAX_HISTORY)
+      const filtered = prev.filter((h) => h.id !== item.id)
+      const next = [item, ...filtered].slice(0, MAX_HISTORY)
       Taro.setStorageSync(STORAGE_KEYS.history, next)
       return next
     })

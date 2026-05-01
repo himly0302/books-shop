@@ -1,14 +1,20 @@
 import { useState, useCallback } from 'react'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import { STORAGE_KEYS, MAX_FAVORITES } from '@/constants/cdn'
 
+function readFavorites(): string[] {
+  try {
+    return Taro.getStorageSync(STORAGE_KEYS.favorites) || []
+  } catch {
+    return []
+  }
+}
+
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    try {
-      return Taro.getStorageSync(STORAGE_KEYS.favorites) || []
-    } catch {
-      return []
-    }
+  const [favorites, setFavorites] = useState<string[]>(readFavorites)
+
+  useDidShow(() => {
+    setFavorites(readFavorites())
   })
 
   const save = (list: string[]) => {
