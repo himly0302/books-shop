@@ -1,5 +1,5 @@
-import { View, Image, Text } from '@tarojs/components'
-import Taro, { useRouter } from '@tarojs/taro'
+import { View, Image, Text, Button } from '@tarojs/components'
+import Taro, { useRouter, useShareAppMessage } from '@tarojs/taro'
 import { useState, useEffect } from 'react'
 import { loadCategory } from '@/services/data'
 import type { Book } from '@/services/data'
@@ -32,7 +32,7 @@ export default function DetailPage() {
           const target = books.find((b) => b.id === id)
           if (target) {
             setBook(target)
-            add(target.id)
+            add({ id: target.id, name: target.name, picUrl: target.picUrl })
             break
           }
         }
@@ -43,6 +43,15 @@ export default function DetailPage() {
 
     load()
   }, [id])
+
+  useShareAppMessage(() => {
+    if (!book) return { title: '免费图书', path: '/pages/index/index' }
+    return {
+      title: `${book.name} - ${book.author}`,
+      path: `/pages/detail/index?id=${book.id}`,
+      imageUrl: book.picUrl,
+    }
+  })
 
   if (loading) {
     return (
@@ -92,6 +101,9 @@ export default function DetailPage() {
         >
           <Text>{isFavorite(book.id) ? '❤️' : '🤍'}</Text>
         </View>
+        <Button className="detail-page__share-btn" openType="share">
+          <Text className="detail-page__share-text">分享给好友</Text>
+        </Button>
         <View className="detail-page__copy-btn" onClick={() => copyDownloadLink(book.bd_link)}>
           <Text className="detail-page__copy-text">复制下载链接</Text>
         </View>

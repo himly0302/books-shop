@@ -3,6 +3,7 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/category/index',
     'pages/detail/index',
+    'pages/favorites/index',
   ],
   window: {
     backgroundTextStyle: 'light',

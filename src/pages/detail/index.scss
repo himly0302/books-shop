@@ -102,6 +102,31 @@
     font-size: 40rpx;
   }
 
+  &__share-btn {
+    width: 88rpx;
+    height: 88rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 44rpx;
+    border: 2rpx solid $color-border;
+    flex-shrink: 0;
+    font-size: 32rpx;
+    padding: 0;
+    margin: 0;
+    background-color: $color-card;
+    line-height: 1;
+
+    &::after {
+      border: none;
+    }
+  }
+
+  &__share-text {
+    font-size: 28rpx;
+    color: $color-text-primary;
+  }
+
   &__copy-btn {
     flex: 1;
     height: 88rpx;
