@@ -6,9 +6,6 @@ export const CDN_BASE = `${CDN_PROTOCOL}://teaax7941.hn-bkt.clouddn.com/books-ti
 /** 分类汇总数据 */
 export const INDEX_URL = `${CDN_BASE}/index.json`
 
-/** 分类配置数据 */
-export const CONFIGS_URL = `${CDN_BASE}/configs.json`
-
 /** 七牛云缩略图参数 */
 export const THUMB_PARAMS = '?imageView2/2/w/200/h/280/q/85'
 

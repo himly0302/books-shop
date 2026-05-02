@@ -18,7 +18,7 @@ npm run dev:h5        # 开发模式（H5 + watch）
 
 **数据流**：
 - `src/constants/cdn.ts` 定义 CDN_BASE 及所有 URL 常量
-- `src/services/data.ts` 通过 `Taro.request` 获取 JSON，三级缓存（configs → index → category）
+- `src/services/data.ts` 通过 `Taro.request` 获取 JSON，两级缓存（index → category）
 - 5 个 hooks 封装具体业务逻辑（加载、搜索、收藏、历史）
 - 页面和组件只消费 hooks 返回的数据
 

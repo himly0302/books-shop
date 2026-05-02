@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro'
-import { CONFIGS_URL, INDEX_URL } from '@/constants/cdn'
+import { INDEX_URL, CDN_BASE } from '@/constants/cdn'
 
 export interface Book {
   id: string
@@ -17,12 +17,7 @@ export interface CategoryIndex {
   count: number
 }
 
-export interface Configs {
-  [category: string]: string
-}
-
 const categoryCache = new Map<string, Book[]>()
-let configsCache: Configs | null = null
 let indexCache: CategoryIndex[] | null = null
 
 async function fetchJSON<T>(url: string): Promise<T> {
@@ -33,12 +28,6 @@ async function fetchJSON<T>(url: string): Promise<T> {
   return res.data as T
 }
 
-export async function loadConfigs(): Promise<Configs> {
-  if (configsCache) return configsCache
-  configsCache = await fetchJSON<Configs>(CONFIGS_URL)
-  return configsCache!
-}
-
 export async function loadIndex(): Promise<CategoryIndex[]> {
   if (indexCache) return indexCache
   indexCache = await fetchJSON<CategoryIndex[]>(INDEX_URL)
@@ -47,21 +36,18 @@ export async function loadIndex(): Promise<CategoryIndex[]> {
 
 export async function loadCategory(type: string): Promise<Book[]> {
   if (categoryCache.has(type)) return categoryCache.get(type)!
-  const configs = await loadConfigs()
-  const url = configs[type]
-  if (!url) throw new Error(`未找到分类: ${type}`)
+  const url = `${CDN_BASE}/${type}.json`
   const books = await fetchJSON<Book[]>(url)
   categoryCache.set(type, books)
   return books
 }
 
 export async function loadAllCategories(): Promise<Book[]> {
-  const configs = await loadConfigs()
-  const types = Object.keys(configs).filter((k) => k !== 'index')
+  const index = await loadIndex()
   const loaded: Book[][] = await Promise.all(
-    types.map(async (type) => {
+    index.map(async ({ type }) => {
       if (categoryCache.has(type)) return categoryCache.get(type)!
-      const books = await fetchJSON<Book[]>(configs[type])
+      const books = await fetchJSON<Book[]>(`${CDN_BASE}/${type}.json`)
       categoryCache.set(type, books)
       return books
     }),
@@ -71,6 +57,5 @@ export async function loadAllCategories(): Promise<Book[]> {
 
 export function clearCache(): void {
   categoryCache.clear()
-  configsCache = null
   indexCache = null
 }

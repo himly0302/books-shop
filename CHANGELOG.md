@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+- **移除 CONFIGS_URL 冗余配置**：分类数据 URL 改为直接拼接 `CDN_BASE/{type}.json`，减少一次网络请求
+  - 相关文件：`src/constants/cdn.ts`、`src/services/data.ts`、`src/hooks/useConfigs.ts`
+
 ### Fixed
 - 详情页携带 `type` 参数，优先 `loadCategory(type)` 单分类加载，避免加载全部数据
 - 浏览历史记录增加 `type` 字段，支持从历史跳转时走单分类加载
