@@ -147,7 +147,7 @@ export default function DetailPage() {
             <View className="guide-panel__link-box">
               <Text className="guide-panel__link-text">{guideUrl}</Text>
             </View>
-            <Text className="guide-panel__hint">打开「百度网盘」粘贴即可下载</Text>
+            <Text className="guide-panel__hint">打开「百度网盘」或浏览器粘贴即可下载</Text>
             <View className="guide-panel__close-btn" onClick={() => setGuideVisible(false)}>
               <Text className="guide-panel__close-text">知道了</Text>
             </View>
