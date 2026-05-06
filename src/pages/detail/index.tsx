@@ -3,7 +3,7 @@ import Taro, { useRouter, useShareAppMessage } from '@tarojs/taro'
 import { useState, useEffect, useCallback } from 'react'
 import { loadCategory, loadAllCategories } from '@/services/data'
 import type { Book } from '@/services/data'
-import { CATEGORY_COLORS, DETAIL_IMG_PARAMS } from '@/constants/cdn'
+import { CATEGORY_COLORS, DETAIL_IMG_PARAMS, toProxyUrl } from '@/constants/cdn'
 import { copyDownloadLink, buildFullUrl } from '@/utils/clipboard'
 import { useFavorites } from '@/hooks/useFavorites'
 import { useHistory } from '@/hooks/useHistory'
@@ -61,7 +61,7 @@ export default function DetailPage() {
     return {
       title: `${book.name} - ${book.author}`,
       path: `/pages/detail/index?id=${book.id}&type=${encodeURIComponent(book.type)}`,
-      imageUrl: book.picUrl,
+      imageUrl: toProxyUrl(book.picUrl),
     }
   })
 

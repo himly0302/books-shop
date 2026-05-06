@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro'
-import { INDEX_URL, CDN_BASE } from '@/constants/cdn'
+import { INDEX_URL, CDN_BASE, toProxyUrl } from '@/constants/cdn'
 
 export interface Book {
   id: string
@@ -30,14 +30,14 @@ async function fetchJSON<T>(url: string): Promise<T> {
 
 export async function loadIndex(): Promise<CategoryIndex[]> {
   if (indexCache) return indexCache
-  indexCache = await fetchJSON<CategoryIndex[]>(INDEX_URL)
+  indexCache = await fetchJSON<CategoryIndex[]>(toProxyUrl(INDEX_URL))
   return indexCache!
 }
 
 export async function loadCategory(type: string): Promise<Book[]> {
   if (categoryCache.has(type)) return categoryCache.get(type)!
   const url = `${CDN_BASE}/${type}.json`
-  const books = await fetchJSON<Book[]>(url)
+  const books = await fetchJSON<Book[]>(toProxyUrl(url))
   categoryCache.set(type, books)
   return books
 }
@@ -47,7 +47,7 @@ export async function loadAllCategories(): Promise<Book[]> {
   const loaded: Book[][] = await Promise.all(
     index.map(async ({ type }) => {
       if (categoryCache.has(type)) return categoryCache.get(type)!
-      const books = await fetchJSON<Book[]>(`${CDN_BASE}/${type}.json`)
+      const books = await fetchJSON<Book[]>(toProxyUrl(`${CDN_BASE}/${type}.json`))
       categoryCache.set(type, books)
       return books
     }),

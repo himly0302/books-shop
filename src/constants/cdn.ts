@@ -1,5 +1,8 @@
+/** CDN 域名 */
+export const CDN_HOST = 'https://qn-cdn.windlliu.com'
+
 /** CDN 基础路径 */
-export const CDN_BASE = 'https://qn-cdn.windlliu.com/books-tidy/configs'
+export const CDN_BASE = `${CDN_HOST}/books-tidy/configs`
 
 /** 分类汇总数据 */
 export const INDEX_URL = `${CDN_BASE}/index.json`
@@ -50,3 +53,9 @@ export const MAX_FAVORITES = 100
 
 /** 浏览历史上限 */
 export const MAX_HISTORY = 50
+
+/** 将 CDN URL 转换为后端签名代理 URL */
+export function toProxyUrl(url: string): string {
+  if (!url.startsWith(CDN_HOST)) return url
+  return `${API_BASE}/qn/cdn${url.slice(CDN_HOST.length)}`
+}
