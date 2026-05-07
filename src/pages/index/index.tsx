@@ -10,7 +10,7 @@ import { useConfigs } from '@/hooks/useConfigs'
 import { useSearch } from '@/hooks/useSearch'
 import { useFavorites } from '@/hooks/useFavorites'
 import { useHistory } from '@/hooks/useHistory'
-import { MIN_SEARCH_LENGTH, THUMB_PARAMS } from '@/constants/cdn'
+import { MIN_SEARCH_LENGTH, THUMB_PARAMS, toProxyUrl } from '@/constants/cdn'
 import { BOOK_LISTS } from '@/constants/booklists'
 import './index.scss'
 
@@ -86,7 +86,7 @@ export default function IndexPage() {
                     className="index-page__recent-item"
                     onClick={() => goToDetail(item.id, item.type)}
                   >
-                    <Image className="index-page__recent-cover" src={item.picUrl + THUMB_PARAMS} mode="aspectFill" lazyLoad />
+                    <Image className="index-page__recent-cover" src={toProxyUrl(item.picUrl + THUMB_PARAMS)} mode="aspectFill" lazyLoad />
                     <Text className="index-page__recent-name">{item.name}</Text>
                   </View>
                 ))}
