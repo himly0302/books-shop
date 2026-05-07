@@ -7,9 +7,10 @@ interface SafeImageProps {
   className?: string
   mode?: 'scaleToFill' | 'aspectFit' | 'aspectFill' | 'widthFix' | 'heightFix'
   lazyLoad?: boolean
+  onClick?: () => void
 }
 
-export default function SafeImage({ src, className = '', mode = 'aspectFill', lazyLoad }: SafeImageProps) {
+export default function SafeImage({ src, className = '', mode = 'aspectFill', lazyLoad, onClick }: SafeImageProps) {
   const [error, setError] = useState(false)
 
   if (error) {
@@ -26,6 +27,7 @@ export default function SafeImage({ src, className = '', mode = 'aspectFill', la
       src={src}
       mode={mode}
       lazyLoad={lazyLoad}
+      onClick={onClick}
       onError={() => setError(true)}
     />
   )

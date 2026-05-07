@@ -61,6 +61,7 @@ export default function DetailPage() {
     return {
       title: `${book.name} - ${book.author}`,
       path: `/pages/detail/index?id=${book.id}&type=${encodeURIComponent(book.type)}`,
+      imageUrl: book.picUrl,
     }
   })
 
@@ -108,6 +109,7 @@ export default function DetailPage() {
           src={book.picUrl}
           mode="aspectFit"
           lazyLoad
+          onClick={() => Taro.previewImage({ urls: [book.picUrl], current: book.picUrl })}
         />
         <Text className="detail-page__name">{book.name}</Text>
         <View className="detail-page__meta">
