@@ -132,7 +132,7 @@ export default function DetailPage() {
           <Text>{isFavorite(book.id) ? '❤️' : '🤍'}</Text>
         </View>
         <Button className="detail-page__share-btn" openType="share">
-          <Text className="detail-page__share-text">分享好友</Text>
+          <Text className="detail-page__share-text">分享</Text>
         </Button>
         <View className="detail-page__copy-btn" onClick={handleCopy}>
           <Text className="detail-page__copy-text">复制下载链接</Text>
