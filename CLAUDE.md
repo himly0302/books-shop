@@ -44,6 +44,7 @@ SCSS 全局变量通过 `sass.data` 自动注入到每个 SCSS 文件：`@use "@
 ## Key Conventions
 
 - **CDN 域名**：开发环境用 http，正式环境用 https。协议通过 `config/dev.ts` 和 `config/prod.ts` 的 `defineConstants` 注入
+- **平台条件编译**：使用 `process.env.TARO_ENV`（编译时常量，值为 `'weapp'` 或 `'h5'`）做平台差异化渲染，不增加运行时体积
 - **本地存储**：收藏和浏览历史使用 `Taro.setStorageSync`，Key 定义在 `STORAGE_KEYS`
 - **页面返回状态同步**：读取 storage 的 hooks（`useHistory`、`useFavorites`）必须使用 `useDidShow` 在页面重新显示时从 storage 同步数据，因为 Taro 小程序页面栈返回不触发组件重挂载
 - **组件结构**：每个组件一个目录，包含 `index.tsx` + `index.scss`

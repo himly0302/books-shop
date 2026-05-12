@@ -41,6 +41,10 @@
   }
 
   &__tag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
     padding: 4rpx 16rpx;
     border-radius: 20rpx;
 
