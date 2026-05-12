@@ -5,5 +5,6 @@
 - resource.windlliu.com.key
 - resource.windlliu.com.pem
 
-3. 将resource.windlliu.com 这个域名的 http/https请求导向 静态资源地址`dist`
-- 如果需要迁移到其他地方, 包裹文件的文件夹名为 "resource-shop"
+3. 将resource.windlliu.com 这个域名的 http/https请求导向 静态资源地址(需调整dist)
+- 将 `dist`下的内容全部 移动到 `/var/www/html/resource-shop`
+- 修改 `/var/www/html/resource-shop` 目录权限755
